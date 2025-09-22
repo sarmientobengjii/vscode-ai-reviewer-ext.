@@ -1,14 +1,24 @@
 {
   "name": "ai-code-review-assistant",
   "version": "1.0.0",
-  "main": "index.js",
+  "displayName": "AI Code Review Assistant",
+  "description": "AI-powered code analysis, optimization suggestions, and security scanning using OpenAI/Claude APIs",
+  "publisher": "Harvy Sarmiento",
+  "keywords": [
+    "ai", "code-review", "security", "performance", "refactoring", "openai", "claude"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "axios": "^1.12.2"
   },
@@ -20,5 +30,119 @@
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.36.0",
     "typescript": "^5.9.2"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Linters",
+    "Other",
+    "Machine Learning"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript", 
+    "onLanguage:python",
+    "onLanguage:java",
+    "onLanguage:csharp"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "aiCodeReview.analyzeFile",
+        "title": "Analyze Current File",
+        "category": "AI Code Review"
+      },
+      {
+        "command": "aiCodeReview.analyzeSelection", 
+        "title": "Analyze Selection",
+        "category": "AI Code Review"
+      },
+      {
+        "command": "aiCodeReview.suggestRefactor",
+        "title": "Suggest Refactoring", 
+        "category": "AI Code Review"
+      },
+      {
+        "command": "aiCodeReview.scanSecurity",
+        "title": "Security Scan",
+        "category": "AI Code Review" 
+      },
+      {
+        "command": "aiCodeReview.optimizePerformance",
+        "title": "Performance Analysis",
+        "category": "AI Code Review"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "aiCodeReview.analyzeSelection",
+          "when": "editorHasSelection",
+          "group": "aiCodeReview@1"
+        },
+        {
+          "command": "aiCodeReview.analyzeFile", 
+          "group": "aiCodeReview@2"
+        },
+        {
+          "command": "aiCodeReview.suggestRefactor",
+          "group": "aiCodeReview@3"
+        },
+        {
+          "command": "aiCodeReview.scanSecurity",
+          "group": "aiCodeReview@4"
+        },
+        {
+          "command": "aiCodeReview.optimizePerformance",
+          "group": "aiCodeReview@5"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "aiCodeReview.analyzeFile",
+          "group": "aiCodeReview@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "AI Code Review Assistant",
+      "properties": {
+        "aiCodeReview.apiProvider": {
+          "type": "string",
+          "enum": ["openai", "anthropic"],
+          "default": "anthropic",
+          "description": "AI API provider to use for code analysis"
+        },
+        "aiCodeReview.apiKey": {
+          "type": "string", 
+          "default": "",
+          "description": "API key for the selected provider (store securely)"
+        },
+        "aiCodeReview.model": {
+          "type": "string",
+          "default": "claude-3-sonnet-20240229",
+          "description": "AI model to use (claude-3-sonnet-20240229, gpt-4, etc.)"
+        },
+        "aiCodeReview.autoAnalyze": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically analyze code when files are saved"
+        },
+        "aiCodeReview.maxTokens": {
+          "type": "number",
+          "default": 4000,
+          "description": "Maximum tokens for AI response"
+        },
+        "aiCodeReview.temperature": {
+          "type": "number",
+          "default": 0.1,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "AI temperature setting (0 = deterministic, 1 = creative)"
+        }
+      }
+    }
   }
 }
